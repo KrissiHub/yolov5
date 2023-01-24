@@ -546,6 +546,8 @@ def save_one_box(xyxy, original_file_name, im, file=Path('im.jpg'), gain=1.02, p
     # Save image crop as {file} with crop size multiple {gain} and {pad} pixels. Save and/or return crop
     xyxy = torch.tensor(xyxy).view(-1, 4)
     b = xyxy2xywh(xyxy)  # boxes
+    #save the bounding box so this version doesnt get altered later
+    bounding_box = b
     if square:
         b[:, 2:] = b[:, 2:].max(1)[0].unsqueeze(1)  # attempt rectangle to square
     b[:, 2:] = b[:, 2:] * gain + pad  # box wh * gain + pad
@@ -564,7 +566,13 @@ def save_one_box(xyxy, original_file_name, im, file=Path('im.jpg'), gain=1.02, p
         cropped_path = os.path.dirname(file)
         #put the path together with the file name plus the txt format
         cropped_txt = cropped_path + "/" + cropped_file + ".txt"
+        #we now need to transform the tensor values to float values
+        coordinates_box = []
+        coordinates_box.append(bounding_box[0][0].item())
+        coordinates_box.append(bounding_box[0][1].item())
+        coordinates_box.append(bounding_box[0][2].item())
+        coordinates_box.append(bounding_box[0][3].item())
         #now we create a new text file named after the cropped picture, witch information to which original picture it belongs and the bounding box information
         with open(cropped_txt, "w") as f:
-            f.write(original_file_name)
+            f.write(original_file_name + " " + str(coordinates_box))
     return crop
