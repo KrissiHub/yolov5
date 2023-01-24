@@ -172,7 +172,11 @@ def run(
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                         annotator.box_label(xyxy, label, color=colors(c, True))
                     if save_crop:
-                        save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                        #save th original file name, to pass to save_one_box function
+                        original_file_name = f'{p.stem}.jpg'
+                        #modified, so that the function also passes the original file name
+                        save_one_box(xyxy, original_file_name, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                        
 
             # Stream results
             im0 = annotator.result()
